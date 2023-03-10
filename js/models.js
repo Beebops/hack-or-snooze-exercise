@@ -236,8 +236,8 @@ class User {
     // for each story in user's favorites check
     // if its id does not match the passed in story's id
     // if the id doesn't match the story instance's id, keep the story in user's favorites
-    this.favorites.filter((st) => {
-      st.storyId !== story.storyId
+    this.favorites = this.favorites.filter((st) => {
+      return st.storyId !== story.storyId
     })
     await this.addOrRemoveFavorite('remove', story)
   }

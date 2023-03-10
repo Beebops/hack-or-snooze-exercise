@@ -16,8 +16,19 @@
   margin: 20px 30px;
 }
 
-
 /* Individual stories */
+
+.heart,
+.trash-can {
+  font-size: 1rem;
+  margin: 0 2px;
+  cursor: pointer;
+}
+
+.trash-can:hover,
+.heart:hover {
+  color: red;
+}
 
 .story-link {
   color: black;
@@ -36,4 +47,8 @@
 
 .story-user {
   display: block;
+}
+
+.user-stories {
+  font-family: Arimo, sans-serif;
 }

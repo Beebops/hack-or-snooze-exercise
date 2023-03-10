@@ -24,7 +24,7 @@ class Story {
 
   getHostName() {
     // UNIMPLEMENTED: complete this function!
-    return 'hostname.com'
+    return new URL(this.url).hostname
   }
 }
 
@@ -72,20 +72,33 @@ class StoryList {
    */
 
   async addStory(user, { title, author, url }) {
-    // UNIMPLEMENTED: complete this function!
     const token = user.loginToken
     const response = await axios({
       url: `${BASE_URL}/stories`,
       method: 'POST',
       data: { token, story: { author, title, url } },
     })
-    console.log(response.data)
+    // console.log(response.data)
     const story = new Story(response.data.story)
     // add to all stories list
     this.stories.unshift(story)
     // add to user's own stories list
     user.ownStories.unshift(story)
     return story
+  }
+
+  async removeStory(user, storyId) {
+    const token = user.loginToken
+    await axios({
+      url: `${BASE_URL}/stories/${storyId}`,
+      method: 'DELETE',
+      data: { token },
+    })
+    // filter out the story that has the passed in storyId
+    this.stories = this.stories.filter((story) => story.storyId !== storyId)
+    // remove this story from the user's own stories and favorite stories
+    user.ownStories = user.ownStories.filter((el) => el.storyId !== storyId)
+    user.favorites = user.favorites.filter((el) => el.storyId !== storyId)
   }
 }
 
@@ -198,5 +211,39 @@ class User {
       console.error('loginViaStoredCredentials failed', err)
       return null
     }
+  }
+
+  async addOrRemoveFavorite(addOrRemove, story) {
+    const method = addOrRemove === 'add' ? 'POST' : 'DELETE'
+    console.log(method)
+    const token = this.loginToken
+    await axios({
+      url: `${BASE_URL}/users/${currentUser.username}/favorites/${story.storyId}`,
+      method: method,
+      params: { token },
+    })
+  }
+
+  async addFavorite(story) {
+    console.debug('addFavorite')
+    this.favorites.push(story)
+    await this.addOrRemoveFavorite('add', story)
+  }
+
+  async removeFavorite(story) {
+    console.debug('removeFavorite')
+    // loop through the user's favorite stories
+    // for each story in user's favorites check
+    // if its id does not match the passed in story's id
+    // if the id doesn't match the story instance's id, keep the story in user's favorites
+    this.favorites.filter((st) => {
+      st.storyId !== story.storyId
+    })
+    await this.addOrRemoveFavorite('remove', story)
+  }
+
+  isFavoriteStory(story) {
+    // returns true if the storyId prop from story passed in matches a storyId in favorites list
+    return this.favorites.some((el) => el.storyId === story.storyId)
   }
 }

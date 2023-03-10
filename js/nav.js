@@ -38,6 +38,21 @@ function updateNavOnLogin() {
 
 function navSubmitStoryClick() {
   hidePageComponents()
+  $allStoriesList.show()
   $storyForm.show()
 }
 $navSubmit.on('click', navSubmitStoryClick)
+
+function navFavoritesClick(e) {
+  hidePageComponents()
+  putFavoritesOnPage()
+}
+$body.on('click', '#nav-favorites', navFavoritesClick)
+
+/** show user's own stories on page by clicking 'my stories' */
+function navUserStories(e) {
+  hidePageComponents()
+  putUserStoriesOnPage()
+  $navUserStories.show()
+}
+$body.on('click', '#nav-user-stories', navUserStories)
